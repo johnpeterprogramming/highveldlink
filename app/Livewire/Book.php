@@ -13,8 +13,11 @@ class Book extends Component
 {
     use WireUiActions;
 
-    public $departure_timeslots = ['10am', '2pm'];
-    public $return_timeslots = ['10am'];
+    public $timeslots = [
+        ['city' => 'Ermelo', 'address' => 'Total, 96 Fourie Street', 'time' => '10am'],
+        ['city' => 'Middelburg', 'address' => 'Shell Ultra City Middelburg N4', 'time' => '11:30am'],
+        ['city' => 'Pretoria', 'address' => 'Shell Ultra City Middelburg N4', 'time' => '1pm'],
+    ];
 
     public $selected_departure;
     public $selected_return;
@@ -36,6 +39,7 @@ class Book extends Component
             $description = 'Your trip has been successfully saved.'
         );
 
+        dd($this->selected_departure, $this->selected_return);
         return $this->redirect(route('register'), navigate: true);
     }
 
