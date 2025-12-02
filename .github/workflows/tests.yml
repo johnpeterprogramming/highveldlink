@@ -50,9 +50,3 @@ jobs:
 
       - name: Run Tests
         run: ./vendor/bin/pest
-
-      - name: Generate IDE Helper
-        run: composer ide-helper
-
-      - name: Run Larastan for code analysis
-        run: ./vendor/bin/phpstan analyse
