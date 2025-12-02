@@ -58,5 +58,11 @@
         @endpersist
 
         @livewireScripts
+        <script>
+            // Logic to show notification from outside livewire components(like middleware)
+            const notification = @json(session()->pull('wireui.notification'));
+            if (notification)
+                window.onload = () => { $wireui.notify(notification); }
+        </script>
     </body>
 </html>

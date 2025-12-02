@@ -11,6 +11,11 @@ class Address extends Model
         'street',
     ];
 
+    public function getNameAttribute()
+    {
+        return $this->city . ", " . $this->street;
+    }
+
     public function startAddressSegments()
     {
         return $this->hasMany(AddressSegment::class, 'start_address_id');

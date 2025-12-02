@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -22,12 +23,12 @@ class Booking extends Model
         return $this->belongsTo(Route::class, 'route_id');
     }
 
-    public function departureAddressId() : BelongsTo
+    public function departureAddress() : BelongsTo
     {
         return $this->belongsTo(Address::class, 'departure_address_id');
     }
 
-    public function arrivalAddressId() : BelongsTo
+    public function arrivalAddress() : BelongsTo
     {
         return $this->belongsTo(Address::class, 'arrival_address_id');
     }
@@ -35,5 +36,11 @@ class Booking extends Model
     public function user() : BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Helper Functions
+    public function departureTime() : Carbon
+    {
+        return $this->route->getArrivalTime($this->departure_address_id);
     }
 }

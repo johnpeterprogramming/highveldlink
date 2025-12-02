@@ -55,14 +55,6 @@ class Book extends Component
         ]);
 
         return $this->redirect(route('booking.payment'), navigate: true);
-        /* // Once-off Payments go straight to payment portal */
-        /* if (!$this->showMembershipPanel) */
-        /**/
-        /* // For memberships; the user must be registered */
-        /* if (!Auth::user()) */
-        /*     return $this->redirect(route('register'), navigate: true); */
-        /**/
-        /* return $this->redirect(route('booking-success'), navigate: true); */
     }
 
     /**
