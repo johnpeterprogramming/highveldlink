@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
+        Schema::create('path_pricing', function (Blueprint $table) {
             $table->foreignId('route_id')->constrained('routes');
             $table->foreignId('departure_address_id')->constrained('addresses');
             $table->foreignId('arrival_address_id')->constrained('addresses');
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('booking_type'); // once-off or membership
-            $table->string('status'); // pending until paid for
-            $table->timestamps();
+            $table->decimal('price', 10, 2);
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::dropIfExists('path_pricing');
     }
 };

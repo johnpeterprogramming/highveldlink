@@ -54,7 +54,7 @@ class Book extends Component
             'booking_type' => $this->showMembershipPanel ? 'membership' : 'once-off',
         ]);
 
-        return $this->redirect(route('booking.payment'), navigate: true);
+        return $this->redirect(route('booking.confirm'), navigate: true);
     }
 
     /**
@@ -84,7 +84,7 @@ class Book extends Component
         }
 
         // Extract Route ID and Address ID
-        \Log::debug("Departure Info: ", ["value" => $value]);
+        /* \Log::debug("Departure Info: ", ["value" => $value]); */
         [$routeId, $addressId] = explode('-', $value);
 
         $this->loadArrivalAddresses((int)$routeId, (int)$addressId);
@@ -120,7 +120,7 @@ class Book extends Component
                     'description' => $route->getArrivalTime($endAddressId)?->format("H:i") ?? '',
                 ];
             });
-        \Log::debug("Arrival Addresses: " . $this->arrivalAddresses);
+        /* \Log::debug("Arrival Addresses: " . $this->arrivalAddresses); */
     }
 
     public function mount()
