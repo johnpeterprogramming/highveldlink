@@ -2,8 +2,9 @@
 
 use App\Livewire\Book;
 use App\Livewire\BookingPayment;
-/* use App\Livewire\BookingSuccess; */
+use App\Livewire\BookingSuccess;
 use App\Livewire\BookingConfirm;
+use App\Livewire\BookingPaymentCallback;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -18,11 +19,11 @@ Route::get('/', function () {
 // Bookings
 Route::get('/book', Book::class)->name('book');
 
-Route::middleware(['payment-allowed'])->group(function() {
+Route::middleware(['booking-has-session-data'])->group(function() {
     Route::get('/book/confirm', BookingConfirm::class)->name('booking.confirm');
-    Route::get('/booking/payment', BookingPayment::class)->name('booking.payment');
-    /* Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success'); */
+    /* Route::get('/booking/payment/callback', BookingPaymentCallback::class)->name('booking.callback'); */
 });
+Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success');
 // TODO: booking.payment
 // TODO: booking-success
 // TODO: register

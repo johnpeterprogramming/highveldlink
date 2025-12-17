@@ -5,11 +5,11 @@
         @include('partials.head')
     </head>
 
-    <body>
+    <body class="flex flex-col min-h-screen">
         @include('partials.navbar')
 
         <!-- Main Content -->
-        <main class="flex-1">
+        <main class="flex-1 bg-gray-50">
             {{ $slot }}
         </main>
 

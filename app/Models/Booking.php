@@ -15,6 +15,14 @@ class Booking extends Model
         'user_id',
         'booking_type', // once-off or membership
         'status',
+        'date',
+        'base_route_total',
+        'upsells_total',
+        'grand_total',
+    ];
+
+    protected $casts = [
+        'date' => 'date'
     ];
 
 
@@ -38,9 +46,17 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function upsells()
+    {
+        return $this->belongsToMany(Upsell::class, 'booking_upsell')
+                    ->withPivot('price')
+                    ->withTimestamps();
+    }
+
     // Helper Functions
     public function departureTime() : Carbon
     {
         return $this->route->getArrivalTime($this->departure_address_id);
     }
+
 }

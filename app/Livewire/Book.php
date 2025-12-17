@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
@@ -23,6 +24,7 @@ class Book extends Component
     // Addresses
     public $departureAddresses;
     public $arrivalAddresses;
+    public $date;
 
     public $showMembershipPanel;
     public $selectedMembership; // null unless booking type is membership
@@ -34,6 +36,18 @@ class Book extends Component
         return [
             'selectedDeparture' => ['required', Rule::in($this->departureAddresses->map(fn($item) => $item['value']))],
             'selectedArrival' => ['required', Rule::in($this->arrivalAddresses->map(fn($item) => $item['value']))],
+            'date' => [
+                'required',
+                'date',
+                'after:yesterday', // Can't time travel
+                'before:' . now()->addMonths(2)->format('Y-m-d'), // Can't book more than 2 months in advance
+                function($attribute, $value, $fail) { // Can currently only book for fridays and sundays
+                    $dayOfWeek = Carbon::parse($value)->dayOfWeek;
+                    if (!in_array($dayOfWeek, [0, 5])) { // 0=Sunday, 5=Friday
+                        $fail('Please select a Friday or Sunday.');
+                    }
+                }
+            ]
         ];
     }
 
@@ -51,10 +65,11 @@ class Book extends Component
             'route_id' => $routeId,
             'departure_address_id' => $departureAddressId,
             'arrival_address_id' => $arrivalAddressId,
-            'booking_type' => $this->showMembershipPanel ? 'membership' : 'once-off',
+            'booking_type' => 'once-off', // TODO: change this when memberships are added
+            'date' => $this->date,
         ]);
 
-        return $this->redirect(route('booking.confirm'), navigate: true);
+        $this->redirectRoute('booking.confirm', navigate: true);
     }
 
     /**

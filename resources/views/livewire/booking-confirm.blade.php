@@ -1,15 +1,125 @@
-<div>
-    <section class="section-container">
-        <aside>
-            Departure Address: {{ $this->departureAddress->name }} <br>
-            Arrival Address: {{ $this->arrivalAddress->name }} <br>
-            Departure Time: {{ $this->departureTime }} <br>
-            Arrival Time: {{ $this->arrivalTime }} <br>
-        </aside>
-        <aside>
-            <x-checkbox id="rounded-md" wire:click="$refresh" wire:model.live="directDropoff" rounded="md" label="Direct Dropoff(R{{ $this->directDropoffPrice }}) - Only applicable if you stay in Hillcrest or Hatfield" value="md" xl />
-            <x-checkbox id="rounded-md" wire:click="$refresh" wire:model.live="wifi" rounded="md" label="Uncapped wifi(R{{ $this->wifiPrice }})" value="md" xl />
-            Price: R{{ $this->price }}
-        </aside>
+<div class="min-h-screen bg-gray-50 py-8">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Trip Details Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                <h2 class="text-2xl font-bold text-white">Confirm Your Booking</h2>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Journey Information -->
+                <div class="bg-gray-50 rounded-lg p-6 space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Journey Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-start space-x-3">
+                            <x-icon name="map-pin" class="mt-1"/>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Departure</p>
+                                <p class="text-base text-gray-900">{{ $this->departureAddress->name }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <x-icon name="map-pin" class="mt-1"/>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Arrival</p>
+                                <p class="text-base text-gray-900">{{ $this->arrivalAddress->name }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <x-icon name="calendar" class="mt-1"/>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Date</p>
+                                <p class="text-base text-gray-900">{{ $this->date }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <x-icon name="clock" class="mt-1"/>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Departure Time</p>
+                                <p class="text-base text-gray-900">{{ $this->departureTime }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <x-icon name="clock" class="mt-1"/>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Arrival Time</p>
+                                <p class="text-base text-gray-900">{{ $this->arrivalTime }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" wire:submit="confirmBooking" class="space-y-4">
+                    <!-- Upsells Section -->
+                    <div class="border border-gray-200 rounded-lg p-6 space-y-4">
+
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+                        <x-input
+                            wire:model="name"
+                            label="Name"
+                            placeholder="Jon Doe"
+                            name="name"
+                        />
+                        <x-input
+                            wire:model="email"
+                            label="Email"
+                            placeholder="jon.doe@example.com"
+                            name="email"
+                        />
+                        <x-input
+                            wire:model="phone"
+                            label="Phone Number"
+                            placeholder="0123456789"
+                            name="phone"
+                        />
+
+
+                    </div>
+
+                    <!-- Contact Information Form -->
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add-ons</h3>
+                        <div class="space-y-3">
+                            <x-checkbox
+                                id="direct-dropoff"
+                                wire:click="$refresh"
+                                wire:model.live="directDropoff"
+                                rounded="md"
+                                label="Direct Dropoff (R{{ $this->directDropoffUpsell->price }}) - {{ $this->directDropoffUpsell->description }}"
+                                value="md"
+                                xl
+                            />
+                            <x-checkbox
+                                id="wifi-addon"
+                                wire:click="$refresh"
+                                wire:model.live="wifi"
+                                rounded="md"
+                                label="Uncapped WiFi (R{{ $this->wifiUpsell->price }})"
+                                value="md"
+                                xl
+                            />
+                        </div>
+
+                        <!-- Price Display -->
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-semibold text-gray-900">Total Price:</span>
+                                <span class="text-2xl font-bold text-blue-600">R{{ $this->price }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="pt-4">
+                        <x-button
+                            type="submit"
+                            primary
+                            class="w-full py-3 text-lg"
+                            :label="__('Continue To Payment')"
+                        />
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </section>
 </div>

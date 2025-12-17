@@ -26,6 +26,16 @@
             placeholder="email@example.com"
         />
 
+        <!-- Phone Number -->
+        <x-input
+            wire:model.live="phone"
+            :label="__('Phone Number')"
+            type="tel"
+            autocomplete="tel"
+            required
+            placeholder="0123456789"
+        />
+
         <!-- Password -->
         <x-input
             wire:model.live="password"
