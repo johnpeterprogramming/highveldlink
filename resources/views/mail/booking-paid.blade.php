@@ -5,10 +5,10 @@ Your payment for the booking from **{{ $booking->departureAddress->city }}** to 
 
 | Time                | Departure Location                | Arrival Location                |
 |---------------------|----------------------------------|---------------------------------|
-| {{ $booking->departureTime() }} | {{ $booking->departureAddress->name }} | {{ $booking->arrivalAddress->name }} |
+| {{ $booking->departureTime()->toTimeString() }} | {{ $booking->departureAddress->name }} | {{ $booking->arrivalAddress->name }} |
 
 
-Please be at **{{ $booking->departureAddress->name }}** 20 minutes before the departure time ({{ $booking->departureTime()->subMinutes(20) }}).
+Please be at **{{ $booking->departureAddress->name }}** 20 minutes before the departure time.
 
 Thanks,<br>
 {{ config('app.name') }}

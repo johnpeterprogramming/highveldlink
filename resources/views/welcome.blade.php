@@ -6,7 +6,7 @@
         <div class="flex items-center w-full lg:w-1/2">
           <div class="max-w-2xl mb-8">
             <h1 class="text-4xl font-bold leading-snug tracking-tight text-gray-800 lg:text-4xl lg:leading-tight xl:text-6xl xl:leading-tight dark:text-white">
-                Safe Student Lift
+                Highveld Link
             </h1>
             <p class="py-5 text-xl leading-normal text-gray-500 lg:text-xl xl:text-2xl dark:text-gray-300">Safe, private rides from Mpumalanga to Gauteng universities – because your parents' peace of mind matters as much as yours.</p>
 
@@ -116,12 +116,12 @@
                             <span>
                                 <x-icon solid name="map-pin" class="w-8 h-8" />
                             </span>
-                            Student Lift
+                            Highveld Link
                         </a>
                     </div>
 
                     <div class="max-w-md mt-4 text-gray-500 dark:text-gray-400">
-                    Safe Student Lift is a transport business primarily for students who want safe and comfortable
+                    Highveld Link is a transport business primarily for students who want safe and comfortable
                     transport between Mupumalanga and Gauteng.
                     </div>
                 </div>
@@ -176,7 +176,7 @@
             </div>
 
             <div class="my-10 text-sm text-center text-gray-600 dark:text-gray-400">
-                Copyright © 2025 Safe Student Lift.
+                Copyright © 2025 Highveld Link.
                 <a href="https://web3templates.com/" target="_blank" rel="noopener">
             </div>
     </div>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7e97c65dd62339a8f1f71f5b34047ce",
+    "content-hash": "dc96f7300fee452cf522d444632b6147",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3722,6 +3722,50 @@
                 "source": "https://github.com/ramsey/uuid/tree/4.9.1"
             },
             "time": "2025-09-04T20:59:21+00:00"
+        },
+        {
+            "name": "shipper/laravel-winsms-channel",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/johnpeterprogramming/laravel-winsms-channel.git",
+                "reference": "a023f1c56e31ba74a9036e7546d5a920cd98fdcf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/johnpeterprogramming/laravel-winsms-channel/zipball/a023f1c56e31ba74a9036e7546d5a920cd98fdcf",
+                "reference": "a023f1c56e31ba74a9036e7546d5a920cd98fdcf",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.10",
+                "php": "^7.2 | ^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.8"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Shipper\\WinSMS\\WinSMSServiceProvider"
+                    ],
+                    "aliases": {
+                        "WinSMS": "Shipper\\WinSMS\\Facades\\WinSMS"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shipper\\WinSMS\\": "src/"
+                }
+            },
+            "description": "Laravel notification channel for WinSMS API",
+            "support": {
+                "source": "https://github.com/johnpeterprogramming/laravel-winsms-channel/tree/v1.1.5"
+            },
+            "time": "2025-12-20T14:40:06+00:00"
         },
         {
             "name": "symfony/clock",
@@ -9901,8 +9945,10 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "shipper/laravel-winsms-channel": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

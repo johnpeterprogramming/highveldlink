@@ -70,7 +70,7 @@ class BookingConfirm extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:10', 'min:10'], // TODO: add advanced validation for phone numbers
+            'phone' => ['required', 'string', 'max:11', 'min:10'], // TODO: add advanced validation for phone numbers
         ]);
 
         // Make guest user if user isn't logged in

@@ -7,6 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Booking;
+use Shipper\WinSMS\WinSMSChannel;
+use Shipper\WinSMS\WinSMSMessage;
 
 class BookingPaid extends Notification implements ShouldQueue
 {
@@ -28,7 +30,7 @@ class BookingPaid extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return [WinSMSChannel::class, 'mail'];
     }
 
     /**
@@ -38,4 +40,23 @@ class BookingPaid extends Notification implements ShouldQueue
     {
         return (new MailMessage)->markdown('mail.booking-paid', ['booking' => $this->booking, 'notifiable' => $notifiable]);
     }
+
+     /**
+     * Send sms using WinSMS API
+     *
+     * @param mixed $notifiable
+     * @return array
+     */
+    public function toWinSMS($notifiable): WinSMSMessage
+    {
+        $content = "Hi {$notifiable->name}\n";
+        $content .= "Your Booking on {$this->booking->date->toDateString()} from {$this->booking->departureAddress->name} to {$this->booking->arrivalAddress->name} has been created succesfully!\n";
+        $content .= "Your pickup is at {$this->booking->departureTime()->toTimeString()}.\n\n";
+        $content .= "Please arrive atleast 20 minutes before hand.";
+
+        return (new WinSMSMessage())
+            ->to($notifiable->phone)
+            ->content($content);
+    }
+
 }

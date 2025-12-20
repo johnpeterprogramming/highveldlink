@@ -59,4 +59,9 @@ class Booking extends Model
         return $this->route->getArrivalTime($this->departure_address_id);
     }
 
+    public function arrivalTime() : Carbon
+    {
+        return $this->route->getArrivalTime($this->arrival_address_id);
+    }
+
 }
