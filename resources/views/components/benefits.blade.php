@@ -1,6 +1,6 @@
 @props([
     'title',
-    'description',
+    'description' => '',
     'imageSrc',
     'imgPos' => '',
     'bullets' => [],
@@ -27,9 +27,11 @@
             </h3>
 
             <!-- Description -->
-            <p class="max-w-2xl py-4 text-lg leading-normal text-gray-500 lg:text-xl xl:text-xl dark:text-gray-300">
-                {{ $description }}
-            </p>
+            @if ($description)
+                <p class="max-w-2xl py-4 text-lg leading-normal text-gray-500 lg:text-xl xl:text-xl dark:text-gray-300">
+                    {{ $description }}
+                </p>
+            @endif
         </div>
 
         <!-- Bullet Points -->

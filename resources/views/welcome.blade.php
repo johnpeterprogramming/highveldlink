@@ -8,7 +8,8 @@
             <h1 class="text-4xl font-bold leading-snug tracking-tight text-gray-800 lg:text-4xl lg:leading-tight xl:text-6xl xl:leading-tight dark:text-white">
                 Highveld Link
             </h1>
-            <p class="py-5 text-xl leading-normal text-gray-500 lg:text-xl xl:text-2xl dark:text-gray-300">Safe, private rides from Mpumalanga to Gauteng universities – because your parents' peace of mind matters as much as yours.</p>
+                <p class="py-5 text-xl leading-normal text-gray-500 lg:text-xl xl:text-2xl dark:text-gray-300">Safe, private rides between Mpumalanga and Pretoria
+                    via Hendrina, Middelburg and Witbank. We focus especially on students and seniors.</p>
 
             <div class="flex flex-col items-start space-x-3 space-y-3 sm:space-y-0 sm:items-center sm:flex-row">
               <a
@@ -43,33 +44,32 @@
         <h2 class="text-sm font-bold tracking-wider text-indigo-600 uppercase">About Us</h2>
         <h3 class="max-w-2xl mt-3 text-3xl font-bold leading-snug tracking-tight text-gray-800 lg:leading-tight lg:text-4xl dark:text-white">Travel Smart, Travel Safe</h3>
         <!-- TODO: Reduce paragraph size -->
-        <p class="max-w-6xl py-4 text-lg leading-normal text-gray-500 lg:text-xl xl:text-xl dark:text-gray-300">
+        <p class="max-w-3xl py-4 text-lg leading-normal text-gray-500 lg:text-xl xl:text-xl dark:text-gray-300">
             We understand that leaving home for university is a big step, and for parents in <span class="font-bold">Mpumalanga</span>, watching their children travel to Gauteng brings natural concerns about safety and comfort. <br><br>
-            Unlike crowded shuttles or buses where you're one of many strangers, we offer something different: <span class="font-bold">a maximum of 4 students per vehicle</span>.
+            Unlike crowded shuttles or buses where you're one of many strangers, we offer something different: <span class="font-bold">a maximum of 4 passengers per vehicle</span>. <br><br>
             This means more space for your belongings, a quieter journey to rest or study, and most importantly – a safer, more controlled environment.
         </p>
     </section>
 
     <!-- Features -->
-    <x-benefits title="Safety Features"
-        description="Your Parents can breathe easy"
-        id="safety-features"
+    <x-benefits title="What makes us different"
+        id="what-makes-us-different"
         :imageSrc="Vite::asset('resources/images/landing/avanza-stock.png')"
         :bullets="[
+            [
+                'icon'=>'wifi',
+                'title'=>'Free Wifi',
+                'description'=>'Surf the web with no additional costs.',
+            ],
             [
                 'icon'=>'map-pin',
                 'title'=>'Real time GPS tracking',
                 'description'=>'Parents can receive a live location.',
             ],
             [
-                'icon'=>'user-group',
-                'title'=>'Small groups only',
-                'description'=>'Maximum 4 students means it doesn\'t have the crammed inpersonal vibe that a shuttle has.',
-            ],
-            [
-                'icon'=>'user-circle',
-                'title'=>'Personal service',
-                'description'=>'We know every student by name, not as a number',
+                'icon'=>'arrow-long-right',
+                'title'=>'Direct Dropoff',
+                'description'=>'Available if your dropoff is in Hatfield, Hillcrest or Ermelo.',
             ]
         ]"
     />
