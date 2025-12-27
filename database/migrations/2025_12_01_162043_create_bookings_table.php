@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('arrival_address_id')->constrained('addresses');
             $table->foreignId('user_id')->constrained('users');
             $table->string('booking_type'); // once-off or membership
-            $table->string('status'); // pending until paid for
+            $table->string('status'); // pending/confirmed/paid
             $table->date('date');
             $table->decimal('base_route_total', 10, 2);
             $table->decimal('upsells_total', 10, 2);

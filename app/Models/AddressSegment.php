@@ -13,6 +13,8 @@ class AddressSegment extends Model
         'travel_time_minutes',
     ];
 
+    public $timestamps = false;
+
     public function routePaths()
     {
         return $this->hasMany(RoutePath::class, 'address_segment_id')->orderBy('segment_order_number');

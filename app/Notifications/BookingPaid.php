@@ -30,6 +30,8 @@ class BookingPaid extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
+        if (config('app.debug'))
+            return [];
         return [WinSMSChannel::class, 'mail'];
     }
 

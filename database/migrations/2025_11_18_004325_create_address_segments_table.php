@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('end_address_id')->constrained('addresses');
             $table->decimal('distance')->nullable();
             $table->integer('travel_time_minutes')->nullable();
-            $table->timestamps();
         });
     }
 

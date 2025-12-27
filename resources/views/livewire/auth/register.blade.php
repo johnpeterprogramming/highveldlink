@@ -31,8 +31,8 @@
             wire:model.live="phone"
             :label="__('Phone Number')"
             type="tel"
-            autocomplete="tel"
             required
+            autocomplete="tel"
             placeholder="0123456789"
         />
 

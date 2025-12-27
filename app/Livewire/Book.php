@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\AddressSegment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -14,12 +15,16 @@ use App\Models\Route;
 use App\Models\User;
 use App\Models\RoutePath;
 use App\Models\Booking;
+use App\Services\RouteHelper;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 #[Layout('components.layouts.marketing')]
 class Book extends Component
 {
     use WireUiActions;
+
+    const MAX_PASSENGERS_PER_SEGMENT = 4;
 
     // Addresses
     public $departureAddresses;
@@ -77,7 +82,13 @@ class Book extends Component
      */
     private function mapRouteToDepartureAddresses(Route $route): Collection
     {
+        $excludedSegments = $this->getExcludedSegmentIds($route->id);
+        Log::debug($excludedSegments);
+
         return $route->routePaths
+            ->filter(function (RoutePath $routePath) use ($excludedSegments) {
+                return !$excludedSegments->contains($routePath->address_segment_id);
+            })
             ->map(function (RoutePath $routePath) use ($route) {
             $startAddressId = $routePath->addressSegment->start_address_id;
             return [
@@ -88,18 +99,36 @@ class Book extends Component
         });
     }
 
+    public function updatedDate($value) : void
+    {
+        $this->selectedDeparture = null;
+        $this->selectedArrival = null;
+
+        // When a date gets deselected
+        if ($value == null) {
+            $this->departureAddresses = collect();
+            return;
+        }
+
+        $this->departureAddresses = Route::with([
+            'routePaths',
+            'routePaths.addressSegment',
+            'routePaths.addressSegment.startAddress'])
+            ->get()
+            ->flatmap(fn(Route $route) => $this->mapRouteToDepartureAddresses($route));
+    }
+
     public function updatedSelectedDeparture($value) : void
     {
         $this->selectedArrival = null;
 
-        // It's possible for no value to be selected - handle that case
+        // When a departure address gets deselected
         if ($value == null) {
             $this->arrivalAddresses = collect();
             return;
         }
 
         // Extract Route ID and Address ID
-        /* \Log::debug("Departure Info: ", ["value" => $value]); */
         [$routeId, $addressId] = explode('-', $value);
 
         $this->loadArrivalAddresses((int)$routeId, (int)$addressId);
@@ -122,10 +151,16 @@ class Book extends Component
             ->first()
             ->segment_order_number;
 
+        // Get excluded address segments - segments that are fully booked
+        $excludedSegments = $this->getExcludedSegmentIds($routeId);
+
+
         $this->arrivalAddresses = $route->routePaths
-            ->filter(function (RoutePath $routePath) use ($departureSegmentOrderNum) {
+            ->filter(function (RoutePath $routePath) use ($departureSegmentOrderNum, $excludedSegments) {
                 // Only display addresses that come after the selected from address in a route
-                return $routePath->segment_order_number >= $departureSegmentOrderNum;
+                return $routePath->segment_order_number >= $departureSegmentOrderNum &&
+                    // Filter out segments that are fully booked
+                    !$excludedSegments->contains($routePath->address_segment_id);
             })
             ->map(function (RoutePath $routePath) use ($route) {
                 $endAddressId = $routePath->addressSegment->end_address_id;
@@ -138,18 +173,43 @@ class Book extends Component
         /* \Log::debug("Arrival Addresses: " . $this->arrivalAddresses); */
     }
 
+    // TODO: DO VALIDATION FOR DATE
+    private function getExcludedSegmentIds($routeId) {
+        if (!$this->date) {
+            Log::warning('Date has not been set on the booking page, so excludedSegments could not be calculated.');
+            return collect();
+        }
+
+        $bookings = Booking::where('route_id', $routeId)
+            ->where('date', $this->date)
+            ->where('status', 'confirmed') // TODO: SET TO PAID INSTEAD
+            ->get();
+
+        $addressSegmentIds = AddressSegment::pluck('id')->all();
+        $addressSegmentCount = array_fill_keys($addressSegmentIds, 0);
+
+        $bookings->each(function(Booking $booking) use (&$addressSegmentCount) {
+            // TODO: takes booking, uses from and to address and returns a collection of address segments
+            $bookingAddressSegments = RouteHelper::getAddressSegmentsFromBooking($booking);
+            Log::debug("Segments from booking with id: " . $booking->id);
+            Log::debug($bookingAddressSegments);
+
+            $bookingAddressSegments->each(function (AddressSegment $address_segment) use (&$addressSegmentCount) {
+                $addressSegmentCount[$address_segment->id]++;
+            });
+        });
+
+        Log::debug("Address Segment count: ", $addressSegmentCount);
+
+        return collect(array_filter($addressSegmentCount, fn($count) => $count >= self::MAX_PASSENGERS_PER_SEGMENT))->keys();
+    }
+
     public function mount()
     {
         $this->showMembershipPanel = true;
         // TODO: improve readability and maybe extract logic in helper function
         // TODO: use caching here
-        $this->departureAddresses = Route::with([
-            'routePaths',
-            'routePaths.addressSegment',
-            'routePaths.addressSegment.startAddress'])
-            ->get()
-            ->flatmap(fn(Route $route) => $this->mapRouteToDepartureAddresses($route));
-
+        $this->departureAddresses = collect();
         /* \Log::debug($this->departureAddresses->map(fn($item) => $item['value'])); */
         // TODO: use caching
         $this->arrivalAddresses = collect();
