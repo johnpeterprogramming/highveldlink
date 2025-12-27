@@ -30,17 +30,38 @@ class Register extends Component
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255',
+                function($attribute, $value, $fail) {
+                    $user = User::where('email', $value)->first();
+                    if ($user?->is_guest === false)
+                        $fail('This email has already been taken.');
+                }],
             'phone' => ['required', 'string', 'max:11', 'min:10'], // TODO: add advanced validation for phone numbers
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        event(new Registered(($user = User::create($validated))));
+        $user = User::firstOrCreate(
+            [
+                'email' => $validated['email']
+            ],
+            [
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'password' => $validated['password'],
+                'is_guest' => false
+            ]
+        );
+
+        if (!$user->wasRecentlyCreated) {
+            $user->update(['is_guest' => false]);
+        }
+
+        event(new Registered($user));
 
         Auth::login($user);
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
     }
 }
