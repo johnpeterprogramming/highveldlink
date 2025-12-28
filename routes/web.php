@@ -16,6 +16,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/terms-and-conditions', function() {
+    return view('terms-and-conditions');
+})->name('terms-and-conditions');
+
+Route::get('/privacy-policy', function() {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
 // Bookings
 Route::get('/book', Book::class)->name('book');
 
@@ -24,6 +32,7 @@ Route::middleware(['booking-has-session-data'])->group(function() {
     /* Route::get('/booking/payment/callback', BookingPaymentCallback::class)->name('booking.callback'); */
 });
 Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success');
+
 // TODO: booking.payment
 // TODO: booking-success
 // TODO: register

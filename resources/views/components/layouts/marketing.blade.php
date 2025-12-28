@@ -11,6 +11,7 @@
         <!-- Main Content -->
         <main class="flex-1 bg-gray-50">
             {{ $slot }}
+            @include('partials.footer')
         </main>
 
         <!-- Global notifications -->
