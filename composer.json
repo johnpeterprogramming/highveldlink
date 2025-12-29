@@ -14,6 +14,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/volt": "^1.7.0",
+        "payfast/payfast-php-sdk": "^1.1",
         "shipper/laravel-winsms-channel": "dev-main",
         "wireui/wireui": "^2.5.1"
     },

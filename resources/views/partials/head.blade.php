@@ -12,7 +12,5 @@
 <!-- From Nextly template -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
 
-@livewireStyles
-
 <wireui:scripts />
 @vite(['resources/css/app.css', 'resources/js/app.js'])

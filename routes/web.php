@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PaymentController;
 use App\Livewire\Book;
 use App\Livewire\BookingPayment;
 use App\Livewire\BookingSuccess;
@@ -9,6 +10,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -29,14 +31,20 @@ Route::get('/book', Book::class)->name('book');
 
 Route::middleware(['booking-has-session-data'])->group(function() {
     Route::get('/book/confirm', BookingConfirm::class)->name('booking.confirm');
-    /* Route::get('/booking/payment/callback', BookingPaymentCallback::class)->name('booking.callback'); */
 });
-Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success');
+/* Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success'); */
 
-// TODO: booking.payment
-// TODO: booking-success
-// TODO: register
+// Payfast
+Route::post('/payment/notify', [PaymentController::class, 'notify'])
+    ->name('payment.notify')
+    ->withoutMiddleware([VerifyCsrfToken::class]);
+Route::get('/payment/success/{booking_id}', [PaymentController::class, 'success'])
+    ->name('payment.success');
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])
+    ->name('payment.cancel');
 
+
+// Dashboard
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
