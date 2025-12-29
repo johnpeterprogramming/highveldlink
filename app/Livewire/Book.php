@@ -26,15 +26,18 @@ class Book extends Component
 
     const MAX_PASSENGERS_PER_SEGMENT = 4;
 
-    // Addresses
+    // Address options
     public $departureAddresses;
     public $arrivalAddresses;
-    public $date;
 
+    // Membership
     public $showMembershipPanel;
     public $selectedMembership; // null unless booking type is membership
-    public $selectedDeparture;
-    public $selectedArrival;
+
+    // Form fields
+    public $selectedDeparture = null;
+    public $selectedArrival = null;
+    public $date = null;
 
     public function rules()
     {
@@ -83,7 +86,7 @@ class Book extends Component
     private function mapRouteToDepartureAddresses(Route $route): Collection
     {
         $excludedSegments = $this->getExcludedSegmentIds($route->id);
-        Log::debug($excludedSegments);
+        /* Log::debug($excludedSegments); */
 
         return $route->routePaths
             ->filter(function (RoutePath $routePath) use ($excludedSegments) {

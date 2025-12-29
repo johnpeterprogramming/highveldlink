@@ -19,6 +19,9 @@ class Booking extends Model
         'base_route_total',
         'upsells_total',
         'grand_total',
+        // Payfast
+        'payment_date',
+        'pf_payment_id'
     ];
 
     protected $casts = [

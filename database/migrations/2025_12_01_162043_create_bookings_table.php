@@ -23,6 +23,8 @@ return new class extends Migration
             $table->decimal('base_route_total', 10, 2);
             $table->decimal('upsells_total', 10, 2);
             $table->decimal('grand_total', 10, 2);
+            $table->date('payment_date')->nullable();
+            $table->string('pf_payment_id')->nullable();
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc96f7300fee452cf522d444632b6147",
+    "content-hash": "094d631a720842eb352014ede5be2e11",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2906,6 +2906,59 @@
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
             "time": "2025-09-24T15:06:41+00:00"
+        },
+        {
+            "name": "payfast/payfast-php-sdk",
+            "version": "v1.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Payfast/payfast-php-sdk.git",
+                "reference": "015efcd2df3e580e023dae6e16c943328d38bb78"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Payfast/payfast-php-sdk/zipball/015efcd2df3e580e023dae6e16c943328d38bb78",
+                "reference": "015efcd2df3e580e023dae6e16c943328d38bb78",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": ">=6.0.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9",
+                "squizlabs/php_codesniffer": "^3.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PayFast\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Payfast",
+                    "email": "support@payfast.help"
+                }
+            ],
+            "description": "Payfast PHP Library",
+            "keywords": [
+                "api",
+                "onsite",
+                "payfast",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/Payfast/payfast-php-sdk/issues",
+                "source": "https://github.com/Payfast/payfast-php-sdk/tree/v1.1.6"
+            },
+            "time": "2024-02-28T09:54:10+00:00"
         },
         {
             "name": "phpoption/phpoption",

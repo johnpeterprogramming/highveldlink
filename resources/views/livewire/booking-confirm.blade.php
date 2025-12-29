@@ -49,7 +49,7 @@
                     </div>
                 </div>
 
-                <form method="POST" wire:submit="confirmBooking" class="space-y-4">
+                <form wire:submit="confirmBooking">
                     <!-- Upsells Section -->
                     <div class="border border-gray-200 rounded-lg p-6 space-y-4">
 
@@ -57,18 +57,21 @@
                         <x-input
                             wire:model="name"
                             label="Name"
+                            autocomplete="name"
                             placeholder="Jon Doe"
                             name="name"
                         />
                         <x-input
                             wire:model="email"
                             label="Email"
-                            placeholder="jon.doe@example.com"
+                            autocomplete="email"
+                            placeholder="email@example.com"
                             name="email"
                         />
                         <x-input
                             wire:model="phone"
                             label="Phone Number"
+                            autocomplete="tel"
                             placeholder="0123456789"
                             name="phone"
                         />
@@ -111,13 +114,20 @@
                     </div>
                     <div class="pt-4">
                         <x-button
-                            type="submit"
                             primary
+                            type="submit"
                             class="w-full py-3 text-lg"
                             :label="__('Continue To Payment')"
                         />
                     </div>
                 </form>
+
+                <!-- When this gets shown it redirects to payfast  -->
+                @if ($showPayFastForm)
+                    <div wire:ignore x-data x-show="false" x-init="$nextTick(() => document.getElementById('payfast-form').submit())">
+                        {!! $payFastForm !!}
+                    </div>
+                @endif
 
             </div>
         </div>

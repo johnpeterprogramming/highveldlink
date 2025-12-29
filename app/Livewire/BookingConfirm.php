@@ -14,6 +14,8 @@ use App\Models\Upsell;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\BookingPaid;
+use PayFast\PayFastPayment;
+use Illuminate\Support\Facades\Log;
 
 #[Layout('components.layouts.marketing')]
 class BookingConfirm extends Component
@@ -29,12 +31,20 @@ class BookingConfirm extends Component
     public bool $directDropoff = false;
     public bool $wifi = false;
 
+    // Booking/Payfast
     public $booking_data = [];
+    public $payFastForm = null;
+    public $showPayFastForm = false;
 
     public function mount()
     {
-
         $this->booking_data = session('pending_booking');
+
+        if (!$this->booking_data) {
+            $this->redirectRoute('book');
+            return;
+        }
+
         $this->basePrice = PathPricing::where('route_id', $this->booking_data['route_id'])
             ->where('departure_address_id', $this->booking_data['departure_address_id'])
             ->where('arrival_address_id', $this->booking_data['arrival_address_id'])
@@ -51,6 +61,8 @@ class BookingConfirm extends Component
             $this->email = $user->email;
             $this->phone = $user->phone;
         }
+        Log::debug('checkpoint after mount');
+
     }
 
     public function render()
@@ -61,7 +73,6 @@ class BookingConfirm extends Component
         if ($this->wifi)
             $this->price += $this->wifiUpsell->price;
 
-        // payment-allowed middleware ensures pending_booking exists
         return view('livewire.booking-confirm');
     }
 
@@ -92,12 +103,16 @@ class BookingConfirm extends Component
             'arrival_address_id' => $this->booking_data['arrival_address_id'],
             'booking_type' => $this->booking_data['booking_type'],
             'user_id' => $user->id,
-            'status' => 'confirmed',
+            'status' => 'awaiting-payment',
             'date' => $this->booking_data['date'],
             'base_route_total' => $this->basePrice,
             'upsells_total' => $this->price - $this->basePrice,
             'grand_total' => $this->price,
         ]);
+
+
+        // Clear session data about booking
+        /* session()->forget('pending_booking'); */
 
         // Connect upsells to booking through pivot table
         if ($this->wifi)
@@ -110,13 +125,43 @@ class BookingConfirm extends Component
                 'price' => $this->directDropoffUpsell->price
             ]);
 
-        $user->notify(new BookingPaid($booking));
+        $data = [
+            // Merchant details
+            'return_url'    => 'https://38ed70b29898.ngrok-free.app/payment/success/' . $booking->id,
+            'cancel_url'    => 'https://38ed70b29898.ngrok-free.app/payment/cancel',
+            'notify_url'    => 'https://38ed70b29898.ngrok-free.app/payment/notify',
 
-        // Clear session data about booking
-        session()->forget('pending_booking');
+            // Buyer details
+            'name_first'    => $this->name,
+            'email_address' => $this->email,
+            'cell_number' => $this->phone,
 
-        // Go straight to redirect link - TODO: use payfast link
-        $this->redirectRoute('booking.success', ['booking' => $booking], navigate: true);
+            // Transaction details
+            'm_payment_id'  => (string) $booking->id,
+            'amount'        => number_format($this->price, 2, '.', ''),
+            'item_name'     => 'Booking#' . $booking->id,
+            'item_description' => 'wifi:' . ($this->wifi ? 'yes' : 'no') . ';direct-dropoff:' . ($this->directDropoff ? 'yes' : 'no'),
+        ];
+
+        $payFastPayment = new PayFastPayment([
+            'merchantId' => config('payfast.merchant_id'),
+            'merchantKey' => config('payfast.merchant_key'),
+            'passPhrase' => config('payfast.passphrase'),
+            'testMode' => config('payfast.testing', true)
+        ]);
+
+        $htmlForm = $payFastPayment->custom->createFormFields($data, ['value' => 'Continue To Payment', 'class' => 'w-full py-3 text-lg']);
+
+        // Set payfast-form as the id to the form
+        if (!str_contains($htmlForm, 'id="payfast-form"')) {
+            $htmlForm = preg_replace('/<form\b/', '<form id="payfast-form"', $htmlForm, 1) ?? $htmlForm;
+        }
+
+        // Get the HTML form
+        $this->payFastForm = $htmlForm;
+        $this->showPayFastForm = true;
+
+        /* $user->notify(new BookingPaid($booking)); */
     }
 
     // Computed Properties

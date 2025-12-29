@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use PayFast\PayFastPayment;
+use App\Models\Booking;
+
+// TODO: handle cases when Booking::find fails
+class PaymentController extends Controller
+{
+    public function notify(Request $request)
+    {
+
+        \Log::debug('Notify reached');
+        \Log::debug($request->all());
+        try {
+            // Initialize PayFast
+            $payfast = new PayFastPayment([
+                'merchantId'  => config('payfast.merchant_id'),
+                'merchantKey' => config('payfast.merchant_key'),
+                'passPhrase'  => config('payfast.passphrase'),
+                'testMode'    => config('payfast.testing', true)
+            ]);
+
+            // Get the booking to verify amount
+            $bookingId = $request->input('m_payment_id');
+            $booking = Booking::findOrFail($bookingId);
+
+            \Log::debug("Booking found and didn't fail");
+
+            // Validate the notification
+            // Pass the expected amount to verify it matches
+            $notification = $payfast->notification->isValidNotification(
+                $request->all(),
+                ['amount_gross' => number_format($booking->grand_total, 2, '.', '')]
+            );
+
+            if ($notification === true) {
+                \Log::debug("Notification is valid");
+                // Notification is valid
+                Log::info('Valid PayFast notification received', [
+                    'booking_id' => $bookingId,
+                    'payment_status' => $request->input('payment_status')
+                ]);
+
+                // Check payment status
+                if ($request->input('payment_status') === 'COMPLETE') {
+                    // Update booking status
+                    $booking->update([
+                        'status' => 'paid',
+                        'payment_date' => now(),
+                        'pf_payment_id' => $request->input('pf_payment_id'),
+                    ]);
+
+                    Log::info('Payment completed for booking', ['id' => $bookingId]);
+
+                    // TODO: Manage events for payment success here
+                    // event(new PaymentReceived($booking));
+
+                // CANCELLED
+                } else {
+                    $booking->update([
+                        'status' => 'cancelled'
+                    ]);
+
+                }
+
+                \Log::debug("Returning 200");
+                return response('OK', 200);
+            } else {
+                // Invalid notification
+                Log::error('Invalid PayFast notification', [
+                    'data' => $request->all(),
+                    'validation_result' => $notification
+                ]);
+
+                return response('Invalid notification', 400);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('PayFast notification error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response('Error processing notification', 500);
+        }
+    }
+
+    // User returned from PayFast
+    public function success(Request $request, int $bookingId)
+    {
+        // TODO: handle case where this fails better
+        $booking = Booking::find($bookingId);
+
+        return view('payment.success', ['booking' => $booking]);
+    }
+
+    // User cancelled payment
+    public function cancel(Request $request)
+    {
+        return view('payment.cancel');
+    }
+}

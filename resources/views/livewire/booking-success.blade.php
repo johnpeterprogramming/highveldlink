@@ -35,7 +35,7 @@
                     <div class="mt-8 flex items-center space-x-2">
                         <p class="text-gray-700">
                             Please be at <span class="font-semibold">{{ $booking->departureAddress->name }}</span>
-                            20 minutes before the departure time.
+                            30 minutes before the departure time.
                         </p>
                     </div>
                 </div>

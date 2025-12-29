@@ -34,11 +34,11 @@ INSERT INTO `addresses` (`id`, `city`, `street`, `created_at`, `updated_at`) VAL
 -- Dumping data for table `address_segments`
 --
 
-INSERT INTO `address_segments` (`id`, `start_address_id`, `end_address_id`, `distance`, `travel_time_minutes`, `created_at`, `updated_at`) VALUES
-(1, 1, 2, 103.00, 85, NULL, NULL),
-(2, 2, 3, 140.00, 97, NULL, NULL),
-(3, 3, 2, 140.00, 97, NULL, NULL),
-(4, 2, 1, 103.00, 85, NULL, NULL);
+INSERT INTO `address_segments` (`id`, `start_address_id`, `end_address_id`, `distance`, `travel_time_minutes`) VALUES
+(1, 1, 2, 103.00, 85),
+(2, 2, 3, 140.00, 97),
+(3, 3, 2, 140.00, 97),
+(4, 2, 1, 103.00, 85);
 
 --
 -- Dumping data for table `path_pricing`
@@ -75,6 +75,9 @@ INSERT INTO `route_paths` (`id`, `route_id`, `address_segment_id`, `segment_orde
 (2, 1, 2, 2, NULL, NULL),
 (3, 2, 3, 1, NULL, NULL),
 (4, 2, 4, 2, NULL, NULL);
+
+INSERT INTO `upsells` (`id`, `name`, `is_active`, `price`, `description`, `slug`, `created_at`, `updated_at`) VALUES (NULL, 'Direct Dropoff', '1', '70', NULL, 'direct-dropoff', NULL, NULL), (NULL, 'Uncapped Wifi', '1', '70', NULL, 'uncapped-wifi', NULL, NULL);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -17,7 +17,7 @@ class PaymentAllowed
     {
         // Check if booking exists
         if (!session()->has('pending_booking'))
-            return redirect()->back()->with([
+            return redirect()->intended(route('book'))->with([
                 'wireui.notification' => [
                     'icon' => 'warning',
                     'title' => 'No Booking Found',
