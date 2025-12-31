@@ -20,12 +20,13 @@ class Booking extends Model
         'upsells_total',
         'grand_total',
         // Payfast
-        'payment_date',
+        'payment_date_time',
         'pf_payment_id'
     ];
 
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
+        'payment_date_time' => 'datetime',
     ];
 
 
