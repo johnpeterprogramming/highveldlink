@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BookingPaymentSuccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use PayFast\PayFastPayment;
@@ -45,7 +46,7 @@ class PaymentController extends Controller
 
             if ($notification === true) {
                 // Notification is valid
-                Log::info('Valid PayFast notification received', [
+                Log::channel('payments')->info('Valid PayFast notification received', [
                     'booking_id' => $bookingId,
                     'payment_status' => $request->input('payment_status')
                 ]);
@@ -59,10 +60,13 @@ class PaymentController extends Controller
                         'pf_payment_id' => $request->input('pf_payment_id'),
                     ]);
 
-                    Log::info('Payment completed for booking', ['id' => $bookingId]);
+                    Log::channel('payments')->info('Payment completed for booking', ['id' => $bookingId]);
 
-                    // TODO: Manage events for payment success here
-                    /* event(new PaymentReceived($booking)); */
+                    // Triggers the following:
+                    // - Notification to user to confirm the booking
+                    // - Notification to admin
+                    // - Logs transaction in Google sheets
+                    event(new BookingPaymentSuccess($booking));
 
                 // payment_status == CANCELLED case isn't handled, because that is specifically for subscriptions
                 }
