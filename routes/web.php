@@ -36,7 +36,42 @@ Route::middleware(['booking-has-session-data'])->group(function() {
 // Payfast
 Route::post('/payment/notify', [PaymentController::class, 'notify'])
     ->name('payment.notify')
-    ->withoutMiddleware([VerifyCsrfToken::class]);
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->middleware(function ($request, $next) {
+        // Validate that the request comes from PayFast's known domains
+        // PayFast webhooks come from: www.payfast.co.za, sandbox.payfast.co.za, w1w.payfast.co.za, w2w.payfast.co.za
+        $allowedHosts = [
+            'www.payfast.co.za',
+            'sandbox.payfast.co.za',
+            'w1w.payfast.co.za',
+            'w2w.payfast.co.za',
+        ];
+
+        $host = $request->getHost();
+        
+        // Get the referring domain from the request
+        $referer = $request->headers->get('referer');
+        $refererHost = $referer ? parse_url($referer, PHP_URL_HOST) : null;
+        
+        // Check if request comes from an allowed domain (via referer or reverse DNS lookup)
+        $clientIp = $request->ip();
+        $clientHost = gethostbyaddr($clientIp);
+        
+        // Validate domain by checking reverse DNS lookup
+        $isValidDomain = false;
+        foreach ($allowedHosts as $allowedHost) {
+            if (str_ends_with($clientHost, $allowedHost)) {
+                $isValidDomain = true;
+                break;
+            }
+        }
+        
+        if (!$isValidDomain) {
+            abort(403, 'Unauthorized webhook source domain.');
+        }
+
+        return $next($request);
+    });
 Route::get('/payment/success/{booking_id}', [PaymentController::class, 'success'])
     ->name('payment.success')
     ->middleware('signed:relative');
