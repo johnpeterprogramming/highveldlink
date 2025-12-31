@@ -114,14 +114,12 @@ class BookingConfirm extends Component
                 'price' => $this->directDropoffUpsell->price
             ]);
 
-        // Generate temporary url for success page - so I can avoid implementing access control for guest users, or making use of access tokens
-        $tempSuccessUrl = URL::temporarySignedRoute('payment.success', now()->addMinutes(45), ['booking_id' => $booking->id], false);
-
         $data = [
             // Merchant details
-            'return_url'    => 'https://38ed70b29898.ngrok-free.app' . $tempSuccessUrl,
-            'cancel_url'    => 'https://38ed70b29898.ngrok-free.app/payment/cancel',
-            'notify_url'    => 'https://38ed70b29898.ngrok-free.app/payment/notify',
+            // Generate temporary url for success page - so I can avoid implementing access control for guest users, or making use of access tokens
+            'return_url'    => URL::temporarySignedRoute('payment.success', now()->addMinutes(45), ['booking_id' => $booking->id], true),
+            'cancel_url'    => route('payment.cancel'),
+            'notify_url'    => route('payment.notify'),
 
             // Buyer details
             'name_first'    => $this->name,

@@ -39,7 +39,7 @@ Route::post('/payment/notify', [PaymentController::class, 'notify'])
     ->withoutMiddleware([VerifyCsrfToken::class]);
 Route::get('/payment/success/{booking_id}', [PaymentController::class, 'success'])
     ->name('payment.success')
-    ->middleware('signed:relative');
+    ->middleware('signed');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])
     ->name('payment.cancel');
 
