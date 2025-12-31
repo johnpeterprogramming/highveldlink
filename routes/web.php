@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PaymentController;
+use App\Http\Middleware\ValidatePayFastDomain;
 use App\Livewire\Book;
 use App\Livewire\BookingPayment;
 use App\Livewire\BookingSuccess;
@@ -37,32 +38,7 @@ Route::middleware(['booking-has-session-data'])->group(function() {
 Route::post('/payment/notify', [PaymentController::class, 'notify'])
     ->name('payment.notify')
     ->withoutMiddleware([VerifyCsrfToken::class])
-    ->middleware(function ($request, $next) {
-        // Validate that the request comes from PayFast's known domains
-        // PayFast webhooks come from: www.payfast.co.za, sandbox.payfast.co.za, w1w.payfast.co.za, w2w.payfast.co.za
-        $allowedHosts = [
-            'www.payfast.co.za',
-            'sandbox.payfast.co.za',
-            'w1w.payfast.co.za',
-            'w2w.payfast.co.za',
-        ];
-
-        // Get client IP and perform reverse DNS lookup
-        $clientIp = $request->ip();
-        $clientHost = gethostbyaddr($clientIp);
-        
-        // Validate that reverse DNS lookup succeeded (it returns the IP if it fails)
-        if ($clientHost === $clientIp || $clientHost === false) {
-            abort(403, 'Unauthorized webhook source domain.');
-        }
-        
-        // Validate domain by exact match only (prevents subdomain spoofing)
-        if (!in_array($clientHost, $allowedHosts, true)) {
-            abort(403, 'Unauthorized webhook source domain.');
-        }
-
-        return $next($request);
-    });
+    ->middleware(ValidatePayFastDomain::class);
 Route::get('/payment/success/{booking_id}', [PaymentController::class, 'success'])
     ->name('payment.success')
     ->middleware('signed:relative');
