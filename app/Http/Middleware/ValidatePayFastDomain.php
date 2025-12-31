@@ -15,13 +15,8 @@ class ValidatePayFastDomain
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // PayFast webhooks come from these known domains
-        $allowedHosts = [
-            'www.payfast.co.za',
-            'sandbox.payfast.co.za',
-            'w1w.payfast.co.za',
-            'w2w.payfast.co.za',
-        ];
+        // Get allowed hosts from configuration
+        $allowedHosts = config('payfast.allowed_webhook_hosts', []);
 
         // Get client IP and perform reverse DNS lookup
         $clientIp = $request->ip();
