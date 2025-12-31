@@ -11,9 +11,7 @@ use App\Models\PathPricing;
 use App\Models\Route;
 use App\Models\User;
 use App\Models\Upsell;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\BookingPaid;
 use PayFast\PayFastPayment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -41,11 +39,6 @@ class BookingConfirm extends Component
     {
         $this->booking_data = session('pending_booking');
 
-        if (!$this->booking_data) {
-            $this->redirectRoute('book');
-            return;
-        }
-
         $this->basePrice = PathPricing::where('route_id', $this->booking_data['route_id'])
             ->where('departure_address_id', $this->booking_data['departure_address_id'])
             ->where('arrival_address_id', $this->booking_data['arrival_address_id'])
@@ -62,7 +55,6 @@ class BookingConfirm extends Component
             $this->email = $user->email;
             $this->phone = $user->phone;
         }
-        Log::debug('checkpoint after mount');
 
     }
 
