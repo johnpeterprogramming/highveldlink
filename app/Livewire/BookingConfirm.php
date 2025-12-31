@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Notifications\BookingPaid;
 use PayFast\PayFastPayment;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 #[Layout('components.layouts.marketing')]
 class BookingConfirm extends Component
@@ -110,10 +111,6 @@ class BookingConfirm extends Component
             'grand_total' => $this->price,
         ]);
 
-
-        // Clear session data about booking
-        /* session()->forget('pending_booking'); */
-
         // Connect upsells to booking through pivot table
         if ($this->wifi)
             $booking->upsells()->attach($this->wifiUpsell->id, [
@@ -125,9 +122,12 @@ class BookingConfirm extends Component
                 'price' => $this->directDropoffUpsell->price
             ]);
 
+        // Generate temporary url for success page - so I can avoid implementing access control for guest users, or making use of access tokens
+        $tempSuccessUrl = URL::temporarySignedRoute('payment.success', now()->addMinutes(45), ['booking_id' => $booking->id], false);
+
         $data = [
             // Merchant details
-            'return_url'    => 'https://38ed70b29898.ngrok-free.app/payment/success/' . $booking->id,
+            'return_url'    => 'https://38ed70b29898.ngrok-free.app' . $tempSuccessUrl,
             'cancel_url'    => 'https://38ed70b29898.ngrok-free.app/payment/cancel',
             'notify_url'    => 'https://38ed70b29898.ngrok-free.app/payment/notify',
 
@@ -160,8 +160,6 @@ class BookingConfirm extends Component
         // Get the HTML form
         $this->payFastForm = $htmlForm;
         $this->showPayFastForm = true;
-
-        /* $user->notify(new BookingPaid($booking)); */
     }
 
     // Computed Properties

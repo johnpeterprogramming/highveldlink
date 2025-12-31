@@ -32,14 +32,14 @@ Route::get('/book', Book::class)->name('book');
 Route::middleware(['booking-has-session-data'])->group(function() {
     Route::get('/book/confirm', BookingConfirm::class)->name('booking.confirm');
 });
-/* Route::get('/booking/{booking}/success', BookingSuccess::class)->name('booking.success'); */
 
 // Payfast
 Route::post('/payment/notify', [PaymentController::class, 'notify'])
     ->name('payment.notify')
     ->withoutMiddleware([VerifyCsrfToken::class]);
 Route::get('/payment/success/{booking_id}', [PaymentController::class, 'success'])
-    ->name('payment.success');
+    ->name('payment.success')
+    ->middleware('signed:relative');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])
     ->name('payment.cancel');
 

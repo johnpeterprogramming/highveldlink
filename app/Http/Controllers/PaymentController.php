@@ -6,15 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use PayFast\PayFastPayment;
 use App\Models\Booking;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 
-// TODO: handle cases when Booking::find fails
+/**
+ * Handles PayFast payment gateway callbacks and booking payment redirects.
+ *
+ * This controller processes PayFast server-to-server notifications for booking
+ * payments and displays the appropriate success or cancellation pages when a
+ * user is redirected back from the PayFast payment flow.
+ *
+ * Notify route is used to verify payments to the server before payfast redirects
+ * Cancel and Success routes are obvious
+*/
 class PaymentController extends Controller
 {
     public function notify(Request $request)
     {
-
-        \Log::debug('Notify reached');
-        \Log::debug($request->all());
         try {
             // Initialize PayFast
             $payfast = new PayFastPayment([
@@ -28,8 +36,6 @@ class PaymentController extends Controller
             $bookingId = $request->input('m_payment_id');
             $booking = Booking::findOrFail($bookingId);
 
-            \Log::debug("Booking found and didn't fail");
-
             // Validate the notification
             // Pass the expected amount to verify it matches
             $notification = $payfast->notification->isValidNotification(
@@ -38,7 +44,6 @@ class PaymentController extends Controller
             );
 
             if ($notification === true) {
-                \Log::debug("Notification is valid");
                 // Notification is valid
                 Log::info('Valid PayFast notification received', [
                     'booking_id' => $bookingId,
@@ -50,24 +55,18 @@ class PaymentController extends Controller
                     // Update booking status
                     $booking->update([
                         'status' => 'paid',
-                        'payment_date' => now(),
+                        'payment_date_time' => now(),
                         'pf_payment_id' => $request->input('pf_payment_id'),
                     ]);
 
                     Log::info('Payment completed for booking', ['id' => $bookingId]);
 
                     // TODO: Manage events for payment success here
-                    // event(new PaymentReceived($booking));
+                    /* event(new PaymentReceived($booking)); */
 
-                // CANCELLED
-                } else {
-                    $booking->update([
-                        'status' => 'cancelled'
-                    ]);
-
+                // payment_status == CANCELLED case isn't handled, because that is specifically for subscriptions
                 }
 
-                \Log::debug("Returning 200");
                 return response('OK', 200);
             } else {
                 // Invalid notification
@@ -88,11 +87,10 @@ class PaymentController extends Controller
         }
     }
 
-    // User returned from PayFast
-    public function success(Request $request, int $bookingId)
+    // User returned from PayFast using a temporary signed url
+    public function success($bookingId)
     {
-        // TODO: handle case where this fails better
-        $booking = Booking::find($bookingId);
+        $booking = Booking::findOrFail($bookingId);
 
         return view('payment.success', ['booking' => $booking]);
     }
