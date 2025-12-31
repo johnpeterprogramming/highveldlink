@@ -47,26 +47,17 @@ Route::post('/payment/notify', [PaymentController::class, 'notify'])
             'w2w.payfast.co.za',
         ];
 
-        $host = $request->getHost();
-        
-        // Get the referring domain from the request
-        $referer = $request->headers->get('referer');
-        $refererHost = $referer ? parse_url($referer, PHP_URL_HOST) : null;
-        
-        // Check if request comes from an allowed domain (via referer or reverse DNS lookup)
+        // Get client IP and perform reverse DNS lookup
         $clientIp = $request->ip();
         $clientHost = gethostbyaddr($clientIp);
         
-        // Validate domain by checking reverse DNS lookup
-        $isValidDomain = false;
-        foreach ($allowedHosts as $allowedHost) {
-            if (str_ends_with($clientHost, $allowedHost)) {
-                $isValidDomain = true;
-                break;
-            }
+        // Validate that reverse DNS lookup succeeded (it returns the IP if it fails)
+        if ($clientHost === $clientIp || $clientHost === false) {
+            abort(403, 'Unauthorized webhook source domain.');
         }
         
-        if (!$isValidDomain) {
+        // Validate domain by exact match only (prevents subdomain spoofing)
+        if (!in_array($clientHost, $allowedHosts, true)) {
             abort(403, 'Unauthorized webhook source domain.');
         }
 
