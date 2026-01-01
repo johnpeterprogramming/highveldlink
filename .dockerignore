@@ -1,0 +1,8 @@
+vendor
+node_modules
+bootstrap/cache/*
+storage/logs/*
+.git
+.gitignore
+.env
+frankenphp
